@@ -6,10 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bourne.caesar.petadoptionform.Models.ElementsModel;
 import com.bourne.caesar.petadoptionform.Models.PagesModel;
@@ -34,17 +36,69 @@ public class MainActivity extends AppCompatActivity {
     private TextView formTextView;
     private PetAdoptionModel petAdoptionModel;
     private LinearLayout formListLayout;
+    private Button previousButton, nextButton;
+    int pagePosition ;
+    int numberOfPages;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initialization();
+        if (pagePosition == 0){
+            previousButton.setVisibility(View.GONE);
+        }
 
-         String jsonData = getJsonString("pet_adoption-1.json.json");
+        setViews(pagePosition);
+
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pagePosition == 0 ) {
+                    previousButton.setVisibility(View.GONE);
+                    return;
+                }
+                else if (pagePosition < numberOfPages){
+                    pagePosition = pagePosition - 1;
+                    setViews(pagePosition);
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "No more Previous Pages" +
+                            "", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+      nextButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              if (pagePosition == numberOfPages-1){
+                  Toast.makeText(MainActivity.this, "End of Form", Toast.LENGTH_SHORT).show();
+                  nextButton.setText("Submit");
+                  return;
+              }
+              else if (pagePosition < numberOfPages -1){
+                  pagePosition  = pagePosition +1;
+                  if (pagePosition != 0){
+                      previousButton.setVisibility(View.VISIBLE);
+                  }
+
+              }
+              else {
+                  Toast.makeText(MainActivity.this, "End of Form", Toast.LENGTH_SHORT).show();
+              }
+          }
+      });
+
+    }
+
+    private void setViews(int pageNumber) {
+        String jsonData = getJsonString("pet_adoption-1.json.json");
 
         petAdoptionModel = new Gson().fromJson(jsonData, PetAdoptionModel.class);
         bindViews();
-        PagesModel pagesModel = petAdoptionModel.getPages().get(0);
+
+        PagesModel pagesModel = petAdoptionModel.getPages().get(pageNumber);
+        //
+        numberOfPages = petAdoptionModel.getPages().size();
 
         //for each form section
         for (int i =0; i <pagesModel.getSections().size();i ++){
@@ -72,13 +126,14 @@ public class MainActivity extends AppCompatActivity {
             formListLayout.addView(sectionLayout);
 
         }
-
     }
 
     private void initialization() {
         formTextView = findViewById(R.id.formName);
         embeddedaImageView = findViewById(R.id.embededPhoto);
         formListLayout = findViewById(R.id.formList);
+        previousButton = findViewById(R.id.previousButton);
+        nextButton = findViewById(R.id.nextButton);
     }
 
     private void bindViews() {
