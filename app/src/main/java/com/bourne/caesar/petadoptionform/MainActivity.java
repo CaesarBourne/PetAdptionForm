@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -50,6 +51,30 @@ public class MainActivity extends AppCompatActivity {
 
         setViews(pagePosition);
 
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pagePosition == numberOfPages-1){
+                    Toast.makeText(MainActivity.this, "End of Form", Toast.LENGTH_SHORT).show();
+                    nextButton.setText("Submit");
+                    return;
+                }
+                else if (pagePosition < numberOfPages -1){
+                    pagePosition  = pagePosition +1;
+                    formListLayout.removeAllViews();
+                    if (pagePosition != 0){
+                        previousButton.setVisibility(View.VISIBLE);
+                    }
+                    setViews(pagePosition);
+
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "End of Form", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,28 +94,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-      nextButton.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-              if (pagePosition == numberOfPages-1){
-                  Toast.makeText(MainActivity.this, "End of Form", Toast.LENGTH_SHORT).show();
-                  nextButton.setText("Submit");
-                  return;
-              }
-              else if (pagePosition < numberOfPages -1){
-                  pagePosition  = pagePosition +1;
-                  formListLayout.removeAllViews();
-                  if (pagePosition != 0){
-                      previousButton.setVisibility(View.VISIBLE);
-                  }
-                  setViews(pagePosition);
-
-              }
-              else {
-                  Toast.makeText(MainActivity.this, "End of Form", Toast.LENGTH_SHORT).show();
-              }
-          }
-      });
 
     }
 
@@ -101,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
         bindViews();
 
         PagesModel pagesModel = petAdoptionModel.getPages().get(pageNumber);
-        //
+
+        //set number of pages
         numberOfPages = petAdoptionModel.getPages().size();
 
         //for each form section
@@ -159,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             case "datetime":
                 return new AutoCompleteTextView(this);
             case "yesno":
-                return new RadioGroup(this);
+                return getRadioGroup(viewType);
 
         }
         return getTextViews(viewType);
@@ -199,6 +203,8 @@ public class MainActivity extends AppCompatActivity {
         labelText.setLayoutParams(
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
         labelText.setText(viewType.getLabel());
+        labelText.setInputType(InputType.TYPE_CLASS_NUMBER);
+
         textLayouts.addView(labelText);
 
         // Custom EditText
@@ -239,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
     public String getJsonString(String jsonName){
         String jsonString= null;
         try{
-            InputStream inputStream = getResources().getAssets().open("pet_adoption-1.json.json");
+            InputStream inputStream = getResources().getAssets().open(jsonName);
             int value = inputStream.available();
             byte[] buffer = new byte[value];
             inputStream.read(buffer);
