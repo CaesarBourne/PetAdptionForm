@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 else if (pagePosition < numberOfPages){
+                    nextButton.setText("Next");
+                    formListLayout.removeAllViews();
                     pagePosition = pagePosition - 1;
                     setViews(pagePosition);
                 }
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
               }
               else if (pagePosition < numberOfPages -1){
                   pagePosition  = pagePosition +1;
+                  formListLayout.removeAllViews();
                   if (pagePosition != 0){
                       previousButton.setVisibility(View.VISIBLE);
                   }
