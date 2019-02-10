@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                   if (pagePosition != 0){
                       previousButton.setVisibility(View.VISIBLE);
                   }
+                  setViews(pagePosition);
 
               }
               else {
