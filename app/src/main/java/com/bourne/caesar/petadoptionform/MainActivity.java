@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 return new RadioGroup(this);
 
         }
-        return null;
+        return getTextViews(viewType);
     }
 
     public View getRadioGroup( ElementsModel viewType){
